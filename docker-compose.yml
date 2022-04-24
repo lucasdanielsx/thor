@@ -1,0 +1,103 @@
+# For more information: https://laravel.com/docs/sail
+version: '3'
+services:
+    # laravel.test:
+    #     build:
+    #         context: ./vendor/laravel/sail/runtimes/8.1
+    #         dockerfile: Dockerfile
+    #         args:
+    #             WWWGROUP: '${WWWGROUP}'
+    #     image: sail-8.1/app
+    #     extra_hosts:
+    #         - 'host.docker.internal:host-gateway'
+    #     ports:
+    #         - '${APP_PORT:-80}:80'
+    #     environment:
+    #         WWWUSER: '${WWWUSER}'
+    #         LARAVEL_SAIL: 1
+    #         XDEBUG_MODE: 'coverage'
+    #         XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+    #     volumes:
+    #         - '.:/var/www/html'
+    #     networks:
+    #         - sail
+    #     depends_on:
+    #         - pgsql
+            
+    pgsql:
+        image: postgres:14.1-alpine
+        restart: always
+        environment:
+            POSTGRES_DB: thor
+            POSTGRES_USER: thor
+            POSTGRES_PASSWORD: thor
+        ports:
+            - '5432:5432'
+        networks:
+            - sail
+        volumes: 
+            - 'sail-pgsql:/var/lib/postgresql/data'
+    
+    mailhog:
+        image: 'mailhog/mailhog:latest'
+        ports:
+            - '${FORWARD_MAILHOG_PORT:-1025}:1025'
+            - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - sail
+    
+    pgadmin:
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "thor@example.com"
+            PGADMIN_DEFAULT_PASSWORD: "thor"
+        ports:
+            - "16543:80"
+        depends_on:
+            - pgsql
+        networks:
+            - sail
+
+    zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        networks:
+            - sail
+
+    kafka:
+        image: confluentinc/cp-kafka:latest
+        depends_on:
+            - zookeeper
+        ports:
+            - 9092:9092
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        restart: always
+        networks:
+            - sail
+
+    kafdrop:
+        image: obsidiandynamics/kafdrop:latest
+        depends_on:
+            - kafka
+        ports:
+            - 19000:9000
+        environment:
+            KAFKA_BROKERCONNECT: kafka:29092
+        networks:
+            - sail
+
+networks:
+    sail:
+        driver: bridge
+volumes:
+    sail-pgsql:
+        driver: local
+    
