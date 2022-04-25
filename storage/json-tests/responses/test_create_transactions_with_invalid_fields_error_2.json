@@ -1,0 +1,14 @@
+{
+    "message": "The value must be an integer. (and 2 more errors)",
+    "errors": {
+        "value": [
+            "The value must be an integer."
+        ],
+        "payer": [
+            "The payer field is required."
+        ],
+        "payee": [
+            "The payee field is required."
+        ]
+    }
+}

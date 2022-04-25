@@ -24,6 +24,7 @@ class TransactionRequest extends FormRequest
     public function rules()
     {
         //Max value to transaction ???
+        //Valid CPF??
         return [
             'value' => ['required', 'integer', 'min:1'],
             'payer' => ['required', 'string', 'min:11', 'max:14', 'different:payee'],

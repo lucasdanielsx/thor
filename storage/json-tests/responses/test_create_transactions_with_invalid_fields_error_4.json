@@ -1,0 +1,14 @@
+{
+    "message": "The value field is required. (and 2 more errors)",
+    "errors": {
+        "value": [
+            "The value field is required."
+        ],
+        "payer": [
+            "The payer must not be greater than 14 characters."
+        ],
+        "payee": [
+            "The payee field is required."
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "message": "The value must be at least 1. (and 2 more errors)",
+    "errors": {
+        "value": [
+            "The value must be at least 1."
+        ],
+        "payer": [
+            "The payer field is required."
+        ],
+        "payee": [
+            "The payee field is required."
+        ]
+    }
+}

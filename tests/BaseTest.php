@@ -2,8 +2,12 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 abstract class BaseTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function getJsonResponse(string $fileName) {
         $path = storage_path() . '/json-tests/responses/' . $fileName;
 
