@@ -18,11 +18,11 @@ class TransactionRepository
       ?array $payload = [])
     {
         return Transaction::create([
-          'id' => Str::uuid(),
-          'value' => $value,
-          'status' => TransactionStatus::CREATED,
-          'payload' => json_encode($payload)
-      ]);
+            'id' => Str::uuid(),
+            'value' => $value,
+            'status' => TransactionStatus::CREATED,
+            'payload' => json_encode($payload)
+        ]);
     }
 
     /**
