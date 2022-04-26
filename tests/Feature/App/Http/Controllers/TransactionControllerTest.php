@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\App\Http\Controllers;;
 
 use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\Topics;

@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('kafka:authorize_transaction')->everyMinute();
+        $schedule->command('kafka:transaction_notification')->everyMinute();
     }
 
     /**

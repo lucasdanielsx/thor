@@ -22,7 +22,7 @@ class MockAuthorizer implements IAuthorizer
             $authorizerResponse->payload = $response->json();
 
             if($response->successful())
-                $authorizerResponse->status = AuthorizerStatus::ERROR;
+                $authorizerResponse->status = AuthorizerStatus::AUTHORIZED;
             else
                 $authorizerResponse->status = AuthorizerStatus::NOT_AUTHORIZED;
         } catch (\Throwable $th) {

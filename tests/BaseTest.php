@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class BaseTest extends TestCase
@@ -18,5 +20,17 @@ abstract class BaseTest extends TestCase
         $path = storage_path() . '/json-tests/requests/' . $fileName;
 
         return json_decode(file_get_contents($path), true);
+    }
+
+    public function getCostumerUser() {
+        return User::where('type', 1)->first();
+    }
+
+    public function getStoreUser() {
+        return User::where('type', 2)->first();
+    }
+
+    public function createTransaction() {
+        return Transaction::factory()->create();
     }
 }
