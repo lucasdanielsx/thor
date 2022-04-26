@@ -35,11 +35,11 @@ class StatementService
         $logId = Str::uuid();
 
         try {
-            Log::info('Create an statement for wallet: ' . $walletId, [$logId]);
+            Log::channel('stderr')->info('Create an statement for wallet: ' . $walletId, [$logId]);
 
             return $this->statementRepository->create($value, $walletId, $transactionId, $type, $balance);
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }
@@ -50,7 +50,7 @@ class StatementService
         $logId = Str::uuid();
 
         try {
-            Log::info('Update statement of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$logId]);
 
             return $this->statementRepository->updateBalancesAndStatus(
                 $id, 
@@ -59,7 +59,7 @@ class StatementService
                 $status
             );
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }
@@ -70,11 +70,11 @@ class StatementService
         $logId = Str::uuid();
 
         try {
-            Log::info('Update statement of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$logId]);
 
             return $this->statementRepository->updateStatus($id, $status);
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }

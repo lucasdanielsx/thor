@@ -31,7 +31,7 @@ class KafkaService
 
             $producer->send();
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::channel('stderr')->error($th);
 
             throw $th;
         }

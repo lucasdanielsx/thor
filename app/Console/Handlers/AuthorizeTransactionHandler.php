@@ -15,6 +15,7 @@ use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\Topics;
 use App\Shared\Kafka\KafkaService;
 use App\Shared\Kafka\Messages\TransactionMessage;
+use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 
 class AuthorizeTransactionHandler extends BaseHandler
@@ -70,6 +71,8 @@ class AuthorizeTransactionHandler extends BaseHandler
         $correlationId = (string) $headers['correlationId'];
 
         try {
+            Log::channel('stderr')->info('Processing message ' . $correlationId);
+
             $transaction = $this->transactionService->findById($body['transactionId']);
 
             if($transaction->status != TransactionStatus::CREATED) 
@@ -87,6 +90,8 @@ class AuthorizeTransactionHandler extends BaseHandler
 
             $this->sendToTopic($transaction, $topic, $correlationId);
 
+            Log::channel('stderr')->info('Message ' . $correlationId . ' processed');
+
             return true;
         } catch (\Throwable $th) {
             $this->retry(
@@ -96,6 +101,8 @@ class AuthorizeTransactionHandler extends BaseHandler
                 (int) $headers['retry']
             );
             
+            Log::channel('stderr')->error('Error processing message -> ' . $correlationId);
+
             throw $th;
         }
     }

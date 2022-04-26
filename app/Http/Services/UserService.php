@@ -27,17 +27,17 @@ class UserService
         $logId = Str::uuid();
 
         try {
-            Log::info('Finding user by document: ' . $document, [$logId]);
+            Log::channel('stderr')->info('Finding user by document: ' . $document, [$logId]);
 
             $user = $this->userRepository->findByDocument($document);
 
             if(!$user) throw new UserNotFoundException($document);
 
-            Log::info('User ' . $document . ' found', [$logId]);
+            Log::channel('stderr')->info('User ' . $document . ' found', [$logId]);
 
             return $user;
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }
@@ -50,18 +50,18 @@ class UserService
     public function findById(string $id){
       $logId = Str::uuid();
 
-      Log::info('Finding user id: ' . $id, [$logId]);
+      Log::channel('stderr')->info('Finding user id: ' . $id, [$logId]);
 
       try {
           $user = $this->userRepository->findById($id);
 
           if(!$user) throw new UserNotFoundException($id);
 
-          Log::info('User ' . $id . ' found', [$logId]);
+          Log::channel('stderr')->info('User ' . $id . ' found', [$logId]);
 
           return $user;
       } catch (\Exception $ex) {
-          Log::error($ex, [$logId]);
+          Log::channel('stderr')->error($ex, [$logId]);
             
           throw $ex;
       }

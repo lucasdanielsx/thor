@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\KafkaService;
 use App\Shared\Kafka\Topics;
+use Illuminate\Support\Facades\Log;
 
 class TransactionAuthorizedHandler extends BaseHandler
 {
@@ -42,12 +43,16 @@ class TransactionAuthorizedHandler extends BaseHandler
         $correlationId = (string) $headers['correlationId'];
 
         try {
+            Log::channel('stderr')->info('Processing message ' . $correlationId);
+            
             $transaction = $this->transactionService->findById((string) $body['transactionId']);
 
             $this->validateTransaction($transaction);
 
             $this->transactionService->confirmPayment($transaction->id);
 
+            Log::channel('stderr')->info('Message ' . $correlationId . ' processed');
+            
             return true;
         } catch (\Throwable $th) {
             $this->retry(
@@ -56,6 +61,8 @@ class TransactionAuthorizedHandler extends BaseHandler
                 $body,
                 (int) $headers['retry']
             );
+
+            Log::channel('stderr')->error('Error processing message -> ' . $correlationId);
             
             throw $th;
         }

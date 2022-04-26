@@ -11,6 +11,7 @@ use App\Shared\Notifiers\INotifier;
 use App\Shared\Notifiers\MockNotifier;
 use App\Shared\Notifiers\NotifierResponse;
 use App\Shared\Notifiers\NotifierStatus;
+use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 
 class TransactionNotificationHandler extends BaseHandler
@@ -49,6 +50,8 @@ class TransactionNotificationHandler extends BaseHandler
         $correlationId = (string) $headers['correlationId'];
 
         try {
+            Log::channel('stderr')->info('Processing message ' . $correlationId);
+
             $user = $this->userService->findById((string) $body['userId']);
 
             $response = $this->notifier->notify();
@@ -61,6 +64,8 @@ class TransactionNotificationHandler extends BaseHandler
                 ["userId" => $user->id, "notifierResponse" => $response->toArray()]
             );
 
+            Log::channel('stderr')->info('Message ' . $correlationId . ' processed');
+            
             return true;
         } catch (\Throwable $th) {
             $this->retry(
@@ -69,6 +74,8 @@ class TransactionNotificationHandler extends BaseHandler
                 $body,
                 (int) $headers['retry']
             );
+
+            Log::channel('stderr')->error('Error processing message -> ' . $correlationId);
             
             throw $th;
         }

@@ -51,7 +51,7 @@ class TransactionNotificationCommand extends Command
     public function handle()
     {
       try {
-          Log::info('Starting command ' . $this->description);
+          Log::channel('stderr')->info('Starting command ' . $this->description);
 
           $consumer = Kafka::createConsumer()->subscribe(Topics::TRANSACTION_NOTIFICATION);
 
@@ -63,7 +63,7 @@ class TransactionNotificationCommand extends Command
 
           $consumer->build()->consume();
       } catch (\Throwable $th) {
-          Log::error($th);
+          Log::channel('stderr')->error($th);
 
           throw $th;
       }

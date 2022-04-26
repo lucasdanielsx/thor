@@ -47,7 +47,7 @@ class TransactionNotAuthorizedCommand extends Command
     public function handle()
     {
       try {
-          Log::info('Starting command ' . $this->description);
+          Log::channel('stderr')->info('Starting command ' . $this->description);
 
           $consumer = Kafka::createConsumer()->subscribe(Topics::TRANSACTION_NOT_AUTHORIZED);
 
@@ -58,7 +58,7 @@ class TransactionNotAuthorizedCommand extends Command
 
           $consumer->build()->consume();
       } catch (\Throwable $th) {
-          Log::error($th);
+          Log::channel('stderr')->error($th);
 
           throw $th;
       }

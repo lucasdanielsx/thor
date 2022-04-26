@@ -27,11 +27,11 @@ class WalletService
         $logId = Str::uuid();
 
         try {
-            Log::info('Update balance of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$logId]);
 
             return $this->walletRepository->updateBalanceIn($id, $value);
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }
@@ -49,11 +49,11 @@ class WalletService
         $logId = Str::uuid();
 
         try {
-            Log::info('Update balance of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$logId]);
 
             return $this->walletRepository->updateBalanceOut($id, $value);
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }

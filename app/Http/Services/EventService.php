@@ -19,11 +19,11 @@ class EventService
         $logId = Str::uuid();
 
         try {
-            Log::info('Create an statement for transaction: ' . $transactionId, [$logId]);
+            Log::channel('stderr')->info('Create an statement for transaction: ' . $transactionId, [$logId]);
 
             return $this->eventRepository->create($transactionId, $type, $payload);
         } catch (\Exception $ex) {
-            Log::error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$logId]);
 
             throw $ex;
         }
