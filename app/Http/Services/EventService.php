@@ -16,14 +16,14 @@ class EventService
     }
 
     public function create(string $transactionId, string $type, ?array $payload = []) {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Create an statement for transaction: ' . $transactionId, [$logId]);
+            Log::channel('stderr')->info('Create an statement for transaction: ' . $transactionId, [$correlationId]);
 
             return $this->eventRepository->create($transactionId, $type, $payload);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }

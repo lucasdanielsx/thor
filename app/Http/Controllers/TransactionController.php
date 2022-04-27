@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionRequest;
 use App\Http\Services\TransactionService;
+use Illuminate\Support\Facades\Request;
 
 class TransactionController extends Controller
 {
@@ -19,5 +20,12 @@ class TransactionController extends Controller
         $transaction = $this->transactionService->create($request);
 
         return response()->json($transaction, 201);
+    }
+
+    public function findById(string $id)
+    {
+        $transaction = $this->transactionService->findById($id);
+
+        return response()->json($transaction, 200);
     }
 }

@@ -83,7 +83,7 @@ class TransactionService
 
     public function create(TransactionRequest $request)
     {
-        $correlationId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         Log::channel('stderr')->info('Creating a new transaction ', [$correlationId]);
 
@@ -140,20 +140,20 @@ class TransactionService
      * @return \App\Models\Transaction
      */
     public function findById(string $id){
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
-        Log::channel('stderr')->info('Finding transaction id: ' . $id, [$logId]);
+        Log::channel('stderr')->info('Finding transaction id: ' . $id, [$correlationId]);
 
         try {
             $transaction = $this->transactionRepository->findById($id);
 
             if(!$transaction) throw new TransactionNotFoundException($id);
 
-            Log::channel('stderr')->info('Transaction ' . $id . ' found', [$logId]);
+            Log::channel('stderr')->info('Transaction ' . $id . ' found', [$correlationId]);
 
             return $transaction;
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
               
             throw $ex;
         }
@@ -208,9 +208,9 @@ class TransactionService
      * @return \App\Models\Transaction
      */
     public function confirmPayment(string $id) {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
-        Log::channel('stderr')->info('Confirming payment of transaction id: ' . $id, [$logId]);
+        Log::channel('stderr')->info('Confirming payment of transaction id: ' . $id, [$correlationId]);
 
         DB::beginTransaction();
 
@@ -231,14 +231,14 @@ class TransactionService
 
             DB::commit();
 
-            $this->notifyUser($payeeId, "New transfer received", $transaction->id, $logId);
-            $this->notifyUser($payerId, "Transfer performed successfully", $transaction->id, $logId);
+            $this->notifyUser($payeeId, "New transfer received", $transaction->id, $correlationId);
+            $this->notifyUser($payerId, "Transfer performed successfully", $transaction->id, $correlationId);
 
             return $transaction;
         } catch (\Exception $ex) {
             DB::rollback();
 
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
             
             throw $ex;
         }
@@ -279,38 +279,38 @@ class TransactionService
      * @return \App\Models\Transaction
      */
     public function reversalPayment(string $id) {
-      $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
-      Log::channel('stderr')->info('Reversal payment of transaction id: ' . $id, [$logId]);
+        Log::channel('stderr')->info('Reversal payment of transaction id: ' . $id, [$correlationId]);
 
-      DB::beginTransaction();
+        DB::beginTransaction();
 
-      try {
-          $transaction = $this->findById($id);
+        try {
+            $transaction = $this->findById($id);
 
-          $this->eventService->create(
-              $transaction->id, 
-              EventType::TRANSACTION_NOT_PAID,
-              []
-          );
+            $this->eventService->create(
+                $transaction->id, 
+                EventType::TRANSACTION_NOT_PAID,
+                []
+            );
 
-          $transaction->status = TransactionStatus::NOT_PAID;
+            $transaction->status = TransactionStatus::NOT_PAID;
 
-          $payerId = $this->processNotFinishedStatement($transaction->statements);
+            $payerId = $this->processNotFinishedStatement($transaction->statements);
 
-          $transaction->save();
+            $transaction->save();
 
-          DB::commit();
+            DB::commit();
 
-          $this->notifyUser($payerId, "Transfer not performed", $transaction->id, $logId);
+            $this->notifyUser($payerId, "Transfer not performed", $transaction->id, $correlationId);
 
-          return $transaction;
-      } catch (\Exception $ex) {
-          DB::rollback();
+            return $transaction;
+        } catch (\Exception $ex) {
+            DB::rollback();
 
-          Log::channel('stderr')->error($ex, [$logId]);
-          
-          throw $ex;
-      }
-  }
+            Log::channel('stderr')->error($ex, [$correlationId]);
+            
+            throw $ex;
+        }
+    }
 }

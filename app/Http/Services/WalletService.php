@@ -24,14 +24,14 @@ class WalletService
      */
     public function updateBalanceIn(string $id, int $value)
     {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$correlationId]);
 
             return $this->walletRepository->updateBalanceIn($id, $value);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }
@@ -46,14 +46,14 @@ class WalletService
      */
     public function updateBalanceOut(string $id, int $value)
     {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$correlationId]);
 
             return $this->walletRepository->updateBalanceOut($id, $value);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }

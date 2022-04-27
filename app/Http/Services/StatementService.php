@@ -32,14 +32,14 @@ class StatementService
         int $type,
         ?int $balance = null
     ) {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Create an statement for wallet: ' . $walletId, [$logId]);
+            Log::channel('stderr')->info('Create an statement for wallet: ' . $walletId, [$correlationId]);
 
             return $this->statementRepository->create($value, $walletId, $transactionId, $type, $balance);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }
@@ -47,10 +47,10 @@ class StatementService
 
     public function updateBalancesAndStatus(string $id, int $oldBalance, int $newBalance, string $status)
     {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$correlationId]);
 
             return $this->statementRepository->updateBalancesAndStatus(
                 $id, 
@@ -59,7 +59,7 @@ class StatementService
                 $status
             );
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }
@@ -67,14 +67,14 @@ class StatementService
 
     public function updateStatus(string $id, string $status)
     {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$logId]);
+            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$correlationId]);
 
             return $this->statementRepository->updateStatus($id, $status);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }

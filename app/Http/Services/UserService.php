@@ -24,20 +24,20 @@ class UserService
      */
     public function findByDocument(string $document)
     {
-        $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Finding user by document: ' . $document, [$logId]);
+            Log::channel('stderr')->info('Finding user by document: ' . $document, [$correlationId]);
 
             $user = $this->userRepository->findByDocument($document);
 
             if(!$user) throw new UserNotFoundException($document);
 
-            Log::channel('stderr')->info('User ' . $document . ' found', [$logId]);
+            Log::channel('stderr')->info('User ' . $document . ' found', [$correlationId]);
 
             return $user;
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$logId]);
+            Log::channel('stderr')->error($ex, [$correlationId]);
 
             throw $ex;
         }
@@ -48,22 +48,22 @@ class UserService
      * @return User
      */
     public function findById(string $id){
-      $logId = Str::uuid();
+        $correlationId = Str::uuid()->toString();
 
-      Log::channel('stderr')->info('Finding user id: ' . $id, [$logId]);
+        Log::channel('stderr')->info('Finding user id: ' . $id, [$correlationId]);
 
-      try {
-          $user = $this->userRepository->findById($id);
+        try {
+            $user = $this->userRepository->findById($id);
 
-          if(!$user) throw new UserNotFoundException($id);
+            if(!$user) throw new UserNotFoundException($id);
 
-          Log::channel('stderr')->info('User ' . $id . ' found', [$logId]);
+            Log::channel('stderr')->info('User ' . $id . ' found', [$correlationId]);
 
-          return $user;
-      } catch (\Exception $ex) {
-          Log::channel('stderr')->error($ex, [$logId]);
-            
-          throw $ex;
-      }
-  }
+            return $user;
+        } catch (\Exception $ex) {
+            Log::channel('stderr')->error($ex, [$correlationId]);
+              
+            throw $ex;
+        }
+    }
 }

@@ -14,3 +14,4 @@ use App\Http\Controllers\TransactionController;
 */
 
 Route::post('/v1/transactions', [TransactionController::class, 'create']);
+Route::get('/v1/transactions/{id}', [TransactionController::class, 'findById']);
