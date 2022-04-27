@@ -10,6 +10,7 @@ use Junges\Kafka\Facades\Kafka;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Shared\Kafka\KafkaService;
+use App\Shared\Notifiers\MockNotifier;
 
 class TransactionNotificationCommand extends Command
 {
@@ -58,7 +59,8 @@ class TransactionNotificationCommand extends Command
           $consumer->withHandler(new TransactionNotificationHandler(
               $this->userService, 
               $this->kafkaService,
-              $this->eventService
+              $this->eventService,
+              new MockNotifier()
           ));
 
           $consumer->build()->consume();

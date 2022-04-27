@@ -8,7 +8,6 @@ use App\Http\Services\EventService;
 use App\Models\Transaction;
 use App\Shared\Authorizers\AuthorizerResponse;
 use App\Shared\Authorizers\IAuthorizer;
-use App\Shared\Authorizers\MockAuthorizer;
 use App\Shared\Authorizers\AuthorizerStatus;
 use App\Shared\Enums\EventType;
 use App\Shared\Enums\TransactionStatus;
@@ -27,11 +26,12 @@ class AuthorizeTransactionHandler extends BaseHandler
     public function __construct(
         TransactionService $transactionService,
         EventService $eventService,
-        KafkaService $kafkaService
+        KafkaService $kafkaService,
+        IAuthorizer $authorizer
     ) {
         parent::__construct($kafkaService);
 
-        $this->authorizer = new MockAuthorizer();
+        $this->authorizer = $authorizer;
         $this->transactionService = $transactionService;
         $this->eventService = $eventService;
     }

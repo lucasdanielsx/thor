@@ -6,6 +6,7 @@ use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\Topics;
 use Junges\Kafka\Facades\Kafka;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 use Tests\BaseTest;
 
 class TransactionControllerTest extends BaseTest
@@ -29,6 +30,27 @@ class TransactionControllerTest extends BaseTest
         $this->assertEquals($content['value'], $requestPayload['value']);
 
         //TODO valid wallets balance
+    }
+
+    public function test_find_by_id_transaction_success()
+    {
+        $this->seed();
+
+        $transaction = $this->createTransaction();
+        $response = $this->get('/api/v1/transactions/' . $transaction->id);
+
+        $response->assertStatus(Response::HTTP_OK);
+
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertEquals($content['id'], $transaction->id);
+    }
+
+    public function test_find_by_id_transaction_error()
+    {
+        $response = $this->get('/api/v1/transactions/' . Str::uuid());
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
     public function test_create_transactions_without_payload_error()

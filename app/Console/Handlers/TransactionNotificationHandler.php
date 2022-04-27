@@ -8,7 +8,6 @@ use App\Shared\Kafka\KafkaService;
 use App\Http\Services\UserService;
 use App\Shared\Enums\EventType;
 use App\Shared\Notifiers\INotifier;
-use App\Shared\Notifiers\MockNotifier;
 use App\Shared\Notifiers\NotifierResponse;
 use App\Shared\Notifiers\NotifierStatus;
 use Illuminate\Support\Facades\Log;
@@ -23,11 +22,12 @@ class TransactionNotificationHandler extends BaseHandler
     public function __construct(
         UserService $userService,
         KafkaService $kafkaService,
-        EventService $eventService
+        EventService $eventService,
+        INotifier $notifier
     ) {
         parent::__construct($kafkaService);
 
-        $this->notifier = new MockNotifier();
+        $this->notifier = $notifier;
         $this->userService = $userService;
         $this->eventService = $eventService;
     }

@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Http\Services\TransactionService;
 use App\Http\Services\EventService;
+use App\Shared\Authorizers\MockAuthorizer;
 use App\Shared\Kafka\KafkaService;
 
 class AuthorizeTransactionCommand extends Command
@@ -59,6 +60,7 @@ class AuthorizeTransactionCommand extends Command
               $this->transactionService, 
               $this->eventService,
               $this->kafkaService,
+              new MockAuthorizer()
           ));
 
           $consumer->build()->consume();
