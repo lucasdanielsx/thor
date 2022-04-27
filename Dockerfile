@@ -43,9 +43,9 @@ COPY --chown=www-data:www-data . /var/www/html
 
 USER www-data
 
-RUN chmod +x /var/www/html/docker-entrypoint.sh
+# RUN composer install
 
-RUN ls -la /var/www/html/docker-entrypoint.sh
+RUN chmod +x /var/www/html/docker-entrypoint.sh
 
 EXPOSE 9000
 

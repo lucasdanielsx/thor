@@ -25,6 +25,8 @@ By default the system creates 2 users:
 - User 1 (document = 94271368040, type = CUSTOMER, wallet balance = 1000000)
 - User 2 (document = 41297905000152, type = STORE, wallet balance = 1000000)
 
+PS: I commit the vendor folder cause php needs rdkafka extension, so to avoid you install this dependency locally I prefer commit de vendor folder
+
 ## Curl's
 
 - To create a new transaction
