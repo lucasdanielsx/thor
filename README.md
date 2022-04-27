@@ -18,7 +18,12 @@
 - sudo +x docker-entrypoint.sh
 - docker-compose up --build
 
-## curls
+## About
+By default the system creates 2 users:
+- User 1 (document = 94271368040, type = CUSTOMER, wallet balance = 1000000)
+- User 2 (document = 41297905000152, type = STORE, wallet balance = 1000000)
+
+## Curl's
 
 - To create a new transaction
 `curl --location --request POST 'http://localhost/api/v1/transactions' \
