@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Shared\Kafka\Topics;
 use App\Console\Handlers\AuthorizeTransactionHandler;
+use App\Console\Services\TransactionServiceHandler;
 use Junges\Kafka\Facades\Kafka;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Http\Services\TransactionService;
 use App\Http\Services\EventService;
 use App\Shared\Authorizers\MockAuthorizer;
 use App\Shared\Kafka\KafkaService;
@@ -28,12 +28,12 @@ class AuthorizeTransactionCommand extends Command
      */
     protected $description = 'Authorize Transaction';
 
-    private TransactionService $transactionService;
+    private TransactionServiceHandler $transactionService;
     private EventService $eventService;
     private KafkaService $kafkaService;
       
     public function __construct(
-        TransactionService $transactionService,
+        TransactionServiceHandler $transactionService,
         EventService $eventService,
         KafkaService $kafkaService
     ) {

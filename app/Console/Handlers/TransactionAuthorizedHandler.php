@@ -2,9 +2,9 @@
 
 namespace App\Console\Handlers;
 
+use App\Console\Services\TransactionServiceHandler;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 use App\Exceptions\HandlerException;
-use App\Http\Services\TransactionService;
 use App\Models\Transaction;
 use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\KafkaService;
@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionAuthorizedHandler extends BaseHandler
 {
-    private TransactionService $transactionService;
+    private TransactionServiceHandler $transactionService;
       
     public function __construct(
-        TransactionService $transactionService,
+        TransactionServiceHandler $transactionService,
         KafkaService $kafkaService
     ) {
         parent::__construct($kafkaService);

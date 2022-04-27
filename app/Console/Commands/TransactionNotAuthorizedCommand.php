@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Shared\Kafka\Topics;
 use App\Console\Handlers\TransactionNotAuthorizedHandler;
+use App\Console\Services\TransactionServiceHandler;
 use Junges\Kafka\Facades\Kafka;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Http\Services\TransactionService;
 use App\Shared\Kafka\KafkaService;
 
 class TransactionNotAuthorizedCommand extends Command
@@ -26,11 +26,11 @@ class TransactionNotAuthorizedCommand extends Command
      */
     protected $description = 'Transaction Not Authorized';
 
-    private TransactionService $transactionService;
+    private TransactionServiceHandler $transactionService;
     private KafkaService $kafkaService;
       
     public function __construct(
-        TransactionService $transactionService,
+        TransactionServiceHandler $transactionService,
         KafkaService $kafkaService
     ) {
         parent::__construct();

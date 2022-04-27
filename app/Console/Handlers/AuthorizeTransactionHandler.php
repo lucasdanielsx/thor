@@ -2,8 +2,8 @@
 
 namespace App\Console\Handlers;
 
+use App\Console\Services\TransactionServiceHandler;
 use App\Exceptions\HandlerException;
-use App\Http\Services\TransactionService;
 use App\Http\Services\EventService;
 use App\Models\Transaction;
 use App\Shared\Authorizers\AuthorizerResponse;
@@ -20,11 +20,11 @@ use Junges\Kafka\Contracts\KafkaConsumerMessage;
 class AuthorizeTransactionHandler extends BaseHandler
 {
     private IAuthorizer $authorizer;
-    private TransactionService $transactionService;
+    private TransactionServiceHandler $transactionService;
     private EventService $eventService;
       
     public function __construct(
-        TransactionService $transactionService,
+        TransactionServiceHandler $transactionService,
         EventService $eventService,
         KafkaService $kafkaService,
         IAuthorizer $authorizer

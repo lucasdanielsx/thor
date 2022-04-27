@@ -10,8 +10,10 @@
 ### THOR
 
 ## Requirements
-- Docker and docker-compose
-- PHP 8.1
+- Docker ^20.10.14
+- Docker compose ^1.26.0
+- PHP ^8.1
+- Composer ^2.3.5
 
 ## How to run
 
@@ -35,7 +37,12 @@ By default the system creates 2 users:
     "payee": "41297905000152"
 }'`
 
-- To create find a transaction (you need to change the {{id}} parameter for the id returned at create a new transaction endpoint)
+- To find a transaction (you need to change the {{id}} parameter for the id returned at create a new transaction endpoint)
 `curl --location --request GET 'http://localhost/api/v1/transactions/{{id}}' \
 --header 'Accept: application/json' \
 --data-raw ''`
+
+- To find a wallet (you need to change the {{document}} parameter for the document of user)
+curl --location --request GET 'http://localhost/api/v1/wallets/{{document}}' \
+--header 'Accept: application/json' \
+--data-raw ''

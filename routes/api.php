@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WalletController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,3 +16,5 @@ use App\Http\Controllers\TransactionController;
 
 Route::post('/v1/transactions', [TransactionController::class, 'create']);
 Route::get('/v1/transactions/{id}', [TransactionController::class, 'findById']);
+
+Route::get('/v1/wallets/{document}', [WalletController::class, 'findByUserDocument']);
