@@ -43,6 +43,6 @@ By default the system creates 2 users:
 --data-raw ''`
 
 - To find a wallet (you need to change the {{document}} parameter for the document of user)
-curl --location --request GET 'http://localhost/api/v1/wallets/{{document}}' \
+`curl --location --request GET 'http://localhost/api/v1/wallets/{{document}}' \
 --header 'Accept: application/json' \
---data-raw ''
+--data-raw ''`
