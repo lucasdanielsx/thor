@@ -26,8 +26,8 @@ class TransactionNotAuthorizedHandler extends BaseHandler
 
     private function validateTransaction(Transaction $transaction){
         if (
-            $transaction->status == TransactionStatus::Paid || 
-            $transaction->status == TransactionStatus::NotPaid
+            $transaction->status == TransactionStatus::Paid->value || 
+            $transaction->status == TransactionStatus::NotPaid->value
         ) 
           throw new HandlerException('Invalid transaction status');
 

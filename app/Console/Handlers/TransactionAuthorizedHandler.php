@@ -30,13 +30,11 @@ class TransactionAuthorizedHandler extends BaseHandler
      */
     private function validateTransaction(Transaction $transaction){
         if (
-            $transaction->status == TransactionStatus::Paid || 
-            $transaction->status == TransactionStatus::NotPaid
+            $transaction->status == TransactionStatus::Paid->value || 
+            $transaction->status == TransactionStatus::NotPaid->value
         ) 
-            throw new HandlerException('Invalid transaction status');
-
         
-        if (in_array(EventType::TransactionAuthorized->value, array_column($transaction->events, 'type'))) 
+        if (in_array(EventType::TransactionAuthorized->value, array_column($transaction->events->toArray()[0], 'type'))) 
             throw new HandlerException('Invalid transaction authorized event not found');
     }
 

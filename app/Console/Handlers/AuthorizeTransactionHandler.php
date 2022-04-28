@@ -64,7 +64,7 @@ class AuthorizeTransactionHandler extends BaseHandler
      * Validate if transaction is ready to be processed
      */
     private function validateTransaction(Transaction $transaction){
-        if($transaction->status != TransactionStatus::Created) 
+        if($transaction->status != TransactionStatus::Created->value) 
             throw new HandlerException('Invalid transaction status');
     }
 
