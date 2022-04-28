@@ -9,12 +9,13 @@ class UserNotFoundException extends Exception
 {
     private string $value;
       
-    public function __construct(string $value)
+    public function __construct(string $value, string $message = "")
     {
-        parent::__construct("User {$value} not found");
+        parent::__construct($message);
 
         $this->value = $value;
     }
+
     /**
      * Render the exception into an HTTP response.
      *

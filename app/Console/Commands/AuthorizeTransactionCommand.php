@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\Shared\Kafka\Topics;
 use App\Console\Handlers\AuthorizeTransactionHandler;
+use App\Console\Services\EventServiceHandler;
 use App\Console\Services\TransactionServiceHandler;
-use Junges\Kafka\Facades\Kafka;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use App\Http\Services\EventService;
 use App\Shared\Authorizers\MockAuthorizer;
 use App\Shared\Kafka\KafkaService;
+use App\Shared\Kafka\Topics;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Junges\Kafka\Facades\Kafka;
 
 class AuthorizeTransactionCommand extends Command
 {
@@ -29,12 +29,12 @@ class AuthorizeTransactionCommand extends Command
     protected $description = 'Authorize Transaction';
 
     private TransactionServiceHandler $transactionService;
-    private EventService $eventService;
+    private EventServiceHandler $eventService;
     private KafkaService $kafkaService;
       
     public function __construct(
         TransactionServiceHandler $transactionService,
-        EventService $eventService,
+        EventServiceHandler $eventService,
         KafkaService $kafkaService
     ) {
         parent::__construct();
@@ -52,9 +52,9 @@ class AuthorizeTransactionCommand extends Command
     public function handle()
     {
       try {
-          Log::channel('stderr')->info('Starting command ' . $this->description);
+          Log::channel('stderr')->info('Starting command -> ' . $this->description);
 
-          $consumer = Kafka::createConsumer()->subscribe(Topics::AUTHORIZE_TRANSACTION);
+          $consumer = Kafka::createConsumer()->subscribe(Topics::AuthorizeTransaction->value);
 
           $consumer->withHandler(new AuthorizeTransactionHandler(
               $this->transactionService, 

@@ -27,7 +27,7 @@ class TransactionFactory extends Factory
         return [
             'id' => Str::uuid(),
             'value' => 100,
-            'status' => TransactionStatus::CREATED,
+            'status' => TransactionStatus::Created,
             'payload' => "{\"test\" : \"test\"}",
             'created_at' => now(),
             'updated_at' => now(),

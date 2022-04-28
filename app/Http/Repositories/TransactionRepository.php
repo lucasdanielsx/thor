@@ -9,8 +9,10 @@ use Illuminate\Support\Str;
 class TransactionRepository 
 {
     /**
-     * @param int $value -> value transacted
-     * @param ?array $payload -> any data about transaction
+     * Create a new transaction
+     * 
+     * @param int $value -> Transaction value
+     * @param ?array $payload -> any important data
      * @return Transaction
      */
     public function create(
@@ -20,12 +22,14 @@ class TransactionRepository
         return Transaction::create([
             'id' => Str::uuid(),
             'value' => $value,
-            'status' => TransactionStatus::CREATED,
+            'status' => TransactionStatus::Created,
             'payload' => json_encode($payload)
         ]);
     }
 
     /**
+     * Find transaction by Id
+     * 
      * @param string $id -> transaction id
      * @return Transaction
      */

@@ -2,12 +2,12 @@
 
 namespace App\Shared\Enums;
 
-class EventType
+enum EventType: string
 {
-  const TRANSACTION_AUTHORIZED = 'TRANSACTION_AUTHORIZED';
-  const TRANSACTION_NOT_AUTHORIZED = 'TRANSACTION_NOT_AUTHORIZED';
-  const TRANSACTION_PAID = 'TRANSACTION_PAID';
-  const TRANSACTION_NOT_PAID = 'TRANSACTION_NOT_PAID';
-  const TRANSACTION_NOTIFIED = 'TRANSACTION_NOTIFIED';
-  const TRANSACTION_NOT_NOTIFIED = 'TRANSACTION_NOT_NOTIFIED';
+  case TransactionAuthorized = 'TRANSACTION_AUTHORIZED';
+  case TransactionNotAuthorized = 'TRANSACTION_NOT_AUTHORIZED';
+  case TransactionPaid = 'TRANSACTION_PAID';
+  case TransactionNotPaid = 'TRANSACTION_NOT_PAID';
+  case TransactionNotified = 'TRANSACTION_NOTIFIED';
+  case TransactionNotNotified = 'TRANSACTION_NOT_NOTIFIED';
 }

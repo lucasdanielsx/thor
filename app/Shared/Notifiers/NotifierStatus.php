@@ -2,9 +2,9 @@
 
 namespace App\Shared\Notifiers;
 
-class NotifierStatus
+enum NotifierStatus: string
 {
-    const NOTIFIED = 'NOTIFIED';
-    const NOT_NOTIFIED = 'NOT_NOTIFIED';
-    const ERROR = 'ERROR';
+    const Notified = 'NOTIFIED';
+    const NotNotified = 'NOT_NOTIFIED';
+    const Error = 'ERROR';
 }

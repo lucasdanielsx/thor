@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Shared\Kafka\Topics;
 use App\Console\Handlers\TransactionNotAuthorizedHandler;
 use App\Console\Services\TransactionServiceHandler;
+use App\Shared\Kafka\KafkaService;
+use App\Shared\Kafka\Topics;
 use Junges\Kafka\Facades\Kafka;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Shared\Kafka\KafkaService;
 
 class TransactionNotAuthorizedCommand extends Command
 {
@@ -47,9 +47,9 @@ class TransactionNotAuthorizedCommand extends Command
     public function handle()
     {
       try {
-          Log::channel('stderr')->info('Starting command ' . $this->description);
+          Log::channel('stderr')->info('Starting command -> ' . $this->description);
 
-          $consumer = Kafka::createConsumer()->subscribe(Topics::TRANSACTION_NOT_AUTHORIZED);
+          $consumer = Kafka::createConsumer()->subscribe(Topics::TransactionNotAuthorized->value);
 
           $consumer->withHandler(new TransactionNotAuthorizedHandler(
               $this->transactionService,

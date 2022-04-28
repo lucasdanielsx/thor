@@ -2,17 +2,17 @@
 
 namespace App\Shared\Kafka;
 
-class Topics
+enum Topics: string
 {
-    const AUTHORIZE_TRANSACTION = 'authorize_transaction_topic';
-    const AUTHORIZE_TRANSACTION_DLQ = 'authorize_transaction_topic_dlq';
+    case AuthorizeTransaction = 'authorize_transaction_topic';
+    case AuthorizeTransactionDlq = 'authorize_transaction_topic_dlq';
 
-    const TRANSACTION_AUTHORIZED = 'transaction_authorized_topic';
-    const TRANSACTION_AUTHORIZED_DLQ = 'transaction_authorized_topic_dlq';
+    case TransactionAuthorized = 'transaction_authorized_topic';
+    case TransactionAuthorizedDlq = 'transaction_authorized_topic_dlq';
 
-    const TRANSACTION_NOT_AUTHORIZED = 'transaction_not_authorized_topic';
-    const TRANSACTION_NOT_AUTHORIZED_DLQ = 'transaction_not_authorized_topic_dlq';
+    case TransactionNotAuthorized = 'transaction_not_authorized_topic';
+    case TransactionNotAuthorizedDlq = 'transaction_not_authorized_topic_dlq';
 
-    const TRANSACTION_NOTIFICATION = 'transaction_notification_topic';
-    const TRANSACTION_NOTIFICATION_DLQ = 'transaction_notification_topic_dlq';
+    case TransactionNotification = 'transaction_notification_topic';
+    case TransactionNotificationDlq = 'transaction_notification_topic_dlq';
 }

@@ -18,7 +18,7 @@ class EventRepositoryTest extends BaseTest
         $repository = new EventRepository();
         $event = $repository->create(
             $transaction->id,
-            EventType::TRANSACTION_AUTHORIZED,
+            EventType::TransactionAuthorized,
             ["test" => "test"]
         );
 
@@ -32,7 +32,7 @@ class EventRepositoryTest extends BaseTest
         $repository = new EventRepository();
         $repository->create(
             Str::uuid(),
-            EventType::TRANSACTION_AUTHORIZED,
+            EventType::TransactionAuthorized,
             ["test" => "test"]
         );
     }

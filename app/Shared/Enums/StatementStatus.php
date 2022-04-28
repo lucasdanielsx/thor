@@ -2,9 +2,9 @@
 
 namespace App\Shared\Enums;
 
-class StatementStatus
+enum StatementStatus: string
 {
-    const CREATED = 'CREATED';
-    const FINISHED = 'FINISHED';
-    const NOT_FINISHED = 'NOT_FINISHED';
+    case Created = 'CREATED';
+    case Finished = 'FINISHED';
+    case NotFinished = 'NOT_FINISHED';
 }

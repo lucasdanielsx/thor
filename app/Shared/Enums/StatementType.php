@@ -2,8 +2,8 @@
 
 namespace App\Shared\Enums;
 
-class StatementType
+enum StatementType: int
 {
-    const IN = 1;
-    const OUT = 2;
+    case In = 1;
+    case Out = 2;
 }

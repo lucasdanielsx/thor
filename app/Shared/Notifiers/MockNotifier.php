@@ -22,11 +22,11 @@ class MockNotifier implements INotifier
             $notifierResponse->payload = $response->json();
 
             if($response->successful())
-                $notifierResponse->status = NotifierStatus::NOTIFIED;
+                $notifierResponse->status = NotifierStatus::Notified;
             else
-                $notifierResponse->status = NotifierStatus::NOT_NOTIFIED;
+                $notifierResponse->status = NotifierStatus::NotNotified;
         } catch (\Throwable $th) {
-            $notifierResponse->status = NotifierStatus::ERROR;
+            $notifierResponse->status = NotifierStatus::Error;
             $notifierResponse->payload = json_encode($th);
         }
 

@@ -20,59 +20,63 @@ class WalletService
     }
 
     /**
-     * deposit money in Wallet
+     * Increase balance value
      * 
-     * @param string $id -> Id of wallet
-     * @param int $value -> value to be + or - of balance
-     * @return App\Models\Wallet
+     * @param string $id -> Wallet Id
+     * @param int $value -> value to be increase
      */
-    public function updateBalanceIn(string $id, int $value) {
+    public function increaseBalance(string $id, int $value) {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Update balance of wallet: ' . $id);
 
-            return $this->walletRepository->updateBalanceIn($id, $value);
+            return $this->walletRepository->increaseBalance($id, $value);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }
     }
 
     /**
-     * withdraw money of Wallet
+     * Decrease balance value
      * 
-     * @param string $id -> Id of wallet
-     * @param int $value -> value to be + or - of balance
-     * @return App\Models\Wallet
+     * @param string $id -> Wallet Id
+     * @param int $value -> value to be decrease
      */
-    public function updateBalanceOut(string $id, int $value) {
+    public function decreaseBalance(string $id, int $value) {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update balance of wallet: ' . $id, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Update balance of wallet: ' . $id);
 
-            return $this->walletRepository->updateBalanceOut($id, $value);
+            return $this->walletRepository->decreaseBalance($id, $value);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }
     }
 
+    /**
+     * Find an user by document
+     * 
+     * @param string $document -> document value of user
+     * @return User
+     */
     public function findByUserDocument(string $document) {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Finding of wallet by document: ' . $document, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Finding of wallet by document: ' . $document);
 
             $user = $this->userService->findByDocument($document);
             $user->wallet->statements;
 
             return $user->wallet;
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }

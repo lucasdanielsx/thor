@@ -9,10 +9,13 @@ class PayeeNotFoundException extends Exception
 {
     private string $payee;
       
-    public function __construct(string $payee)
+    public function __construct(string $payee, string $message = "")
     {
+        parent::__construct($message);
+
         $this->payee = $payee;
     }
+
     /**
      * Render the exception into an HTTP response.
      *

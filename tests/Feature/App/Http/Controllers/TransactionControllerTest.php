@@ -14,22 +14,38 @@ class TransactionControllerTest extends BaseTest
     public function test_create_transaction_success()
     {
         $this->seed();
+        $customer = $this->getCostumerUser();
+        $store = $this->getStoreUser();
 
         Kafka::fake();
 
         $requestPayload = $this->getJsonRequest('test_create_transaction_success.json');
         $response = $this->postJson('/api/v1/transactions', $requestPayload );
 
-        Kafka::assertPublishedOn(Topics::AUTHORIZE_TRANSACTION);
+        Kafka::assertPublishedOn(Topics::AuthorizeTransaction->value);
 
         $response->assertStatus(Response::HTTP_CREATED);
 
         $content = json_decode($response->getContent(), true);
 
-        $this->assertEquals($content['status'], TransactionStatus::CREATED);
+        $this->assertEquals($content['status'], TransactionStatus::Created->value);
         $this->assertEquals($content['value'], $requestPayload['value']);
 
-        //TODO valid wallets balance
+        $response = $this->get('/api/v1/wallets/' . $customer->document);
+
+        //Valid payer balance
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertEquals($content['balance'], 990000);
+        $this->assertNotEmpty($content['statements']);
+
+        //Valid payee balance
+        $response = $this->get('/api/v1/wallets/' . $store->document);
+
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertEquals($content['balance'], 1000000);
+        $this->assertNotEmpty($content['statements']);
     }
 
     public function test_find_by_id_transaction_success()
@@ -140,6 +156,47 @@ class TransactionControllerTest extends BaseTest
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertExactJson(
             $this->getJsonResponse('test_create_transactions_with_invalid_fields_error_7.json')
+        );
+    }
+
+    public function test_create_transactions_payer_not_found_error()
+    {
+        $response = $this->postJson(
+            '/api/v1/transactions', 
+            $this->getJsonRequest('test_create_transactions_payer_not_found_error.json')
+        );
+
+        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertExactJson(
+            $this->getJsonResponse('test_create_transactions_payer_not_found_error.json')
+        );
+    }
+
+    public function test_create_transactions_payee_not_found_error()
+    {
+        $response = $this->postJson(
+            '/api/v1/transactions', 
+            $this->getJsonRequest('test_create_transactions_payee_not_found_error.json')
+        );
+
+        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertExactJson(
+            $this->getJsonResponse('test_create_transactions_payee_not_found_error.json')
+        );
+    }
+
+    public function test_create_transactions_payer_as_store_error()
+    {
+        $this->seed();
+
+        $response = $this->postJson(
+            '/api/v1/transactions', 
+            $this->getJsonRequest('test_create_transactions_payer_as_store_error.json')
+        );
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $response->assertExactJson(
+            $this->getJsonResponse('test_create_transactions_payer_as_store_error.json')
         );
     }
 }

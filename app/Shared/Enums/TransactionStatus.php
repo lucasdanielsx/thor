@@ -2,9 +2,9 @@
 
 namespace App\Shared\Enums;
 
-class TransactionStatus
+enum TransactionStatus: string
 {
-    const PAID = 'PAID';
-    const CREATED = 'CREATED';
-    const NOT_PAID = 'NOT_PAID';
+    case Paid = 'PAID';
+    case Created = 'CREATED';
+    case NotPaid = 'NOT_PAID';
 }

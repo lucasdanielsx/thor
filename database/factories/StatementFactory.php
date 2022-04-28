@@ -29,8 +29,8 @@ class StatementFactory extends Factory
             'payload' => ["test" => "test"],
             'id' => Str::uuid(),
             'value' => 100,
-            'status' => StatementStatus::CREATED,
-            'type' => StatementType::IN,
+            'status' => StatementStatus::Created,
+            'type' => StatementType::In,
             'created_at' => now(),
             'updated_at' => now(),
         ];

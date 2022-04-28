@@ -3,8 +3,8 @@
 namespace App\Console\Handlers;
 
 use App\Console\Services\TransactionServiceHandler;
+use App\Console\Services\EventServiceHandler;
 use App\Exceptions\HandlerException;
-use App\Http\Services\EventService;
 use App\Models\Transaction;
 use App\Shared\Authorizers\AuthorizerResponse;
 use App\Shared\Authorizers\IAuthorizer;
@@ -21,11 +21,11 @@ class AuthorizeTransactionHandler extends BaseHandler
 {
     private IAuthorizer $authorizer;
     private TransactionServiceHandler $transactionService;
-    private EventService $eventService;
+    private EventServiceHandler $eventService;
       
     public function __construct(
         TransactionServiceHandler $transactionService,
-        EventService $eventService,
+        EventServiceHandler $eventService,
         KafkaService $kafkaService,
         IAuthorizer $authorizer
     ) {
@@ -36,34 +36,40 @@ class AuthorizeTransactionHandler extends BaseHandler
         $this->eventService = $eventService;
     }
 
-    private function processResponse(AuthorizerResponse $response) {
+    /**
+     * define event to be insert by authorize response
+     */
+    private function getEvenType(AuthorizerResponse $response) {
         switch($response->status) {
-            case AuthorizerStatus::AUTHORIZED:
-                return [
-                    EventType::TRANSACTION_AUTHORIZED, 
-                    Topics::TRANSACTION_AUTHORIZED
-                ];
+            case AuthorizerStatus::Authorize:
+                return EventType::TransactionAuthorized;
             default:
-                return [
-                    EventType::TRANSACTION_NOT_AUTHORIZED, 
-                    Topics::TRANSACTION_NOT_AUTHORIZED
-                ];
+                return EventType::TransactionNotAuthorized;
         }
     }
 
-    private function sendToTopic(
-        Transaction $transaction, 
-        string $topic,
-        string $correlationId
-    ) {
-        $body = new TransactionMessage();
-        $body->transactionId = $transaction->id;
+    /**
+     * define topic to be sent by authorize response
+     */
+    private function getTopicToBeSent(AuthorizerResponse $response) {
+        switch($response->status) {
+            case AuthorizerStatus::Authorize:
+                return Topics::TransactionAuthorized->value;
+            default:
+                return Topics::TransactionNotAuthorized->value;
+        }
+    }
 
-        $this->kafkaService->publish($topic, $correlationId, (array) $body);
+    /**
+     * Validate if transaction is ready to be processed
+     */
+    private function validateTransaction(Transaction $transaction){
+        if($transaction->status != TransactionStatus::Created) 
+            throw new HandlerException('Invalid transaction status');
     }
 
     public function __invoke(KafkaConsumerMessage $message) {
-        $this->validRetries($message, Topics::AUTHORIZE_TRANSACTION_DLQ);
+        $this->validRetries($message, Topics::AuthorizeTransactionDlq->value);
 
         $body = $message->getBody();
         $headers = $message->getHeaders();
@@ -71,16 +77,16 @@ class AuthorizeTransactionHandler extends BaseHandler
         $correlationId = (string) $headers['correlationId'];
 
         try {
-            Log::channel('stderr')->info('Processing message ' . $correlationId);
+            Log::channel('stderr')->info($correlationId . ' -> processing message');
 
             $transaction = $this->transactionService->findById($body['transactionId']);
 
-            if($transaction->status != TransactionStatus::CREATED) 
-              throw new HandlerException('Invalid transaction status');
+            $this->validateTransaction($transaction);
 
             $response = $this->authorizer->authorize();
             
-            [$eventType, $topic] = $this->processResponse($response);
+            $eventType = $this->getEvenType($response);
+            $topic = $this->getTopicToBeSent($response);
 
             $this->eventService->create(
                 $transaction->id,
@@ -88,19 +94,23 @@ class AuthorizeTransactionHandler extends BaseHandler
                 $response->toArray()
             );
 
-            $this->sendToTopic($transaction, $topic, $correlationId);
+            $message = new TransactionMessage();
+            $message->transactionId = $transaction->id;
 
-            Log::channel('stderr')->info('Message ' . $correlationId . ' processed');
+            $this->sendToTopic($topic, $correlationId, (array) $message);
+
+            Log::channel('stderr')->info($correlationId . ' -> message was processed');
 
             return true;
         } catch (\Throwable $th) {
             $this->retry(
-                Topics::AUTHORIZE_TRANSACTION,
+                Topics::AuthorizeTransaction->value,
                 $correlationId,
                 $body,
                 (int) $headers['retry']
             );
             
+            Log::channel('stderr')->error($th);
             Log::channel('stderr')->error('Error processing message -> ' . $correlationId);
 
             throw $th;

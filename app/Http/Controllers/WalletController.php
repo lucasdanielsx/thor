@@ -15,8 +15,6 @@ class WalletController extends Controller
 
     public function findByUserDocument(string $document)
     {
-        $transaction = $this->walletService->findByUserDocument($document);
-
-        return response()->json($transaction, 200);
+        return $this->walletService->findByUserDocument($document);
     }
 }

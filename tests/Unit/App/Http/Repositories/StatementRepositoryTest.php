@@ -20,7 +20,7 @@ class StatementRepositoryTest extends BaseTest
             1000,
             $user->wallet->id,
             $transaction->id,
-            StatementType::IN
+            StatementType::In
         );
 
         $this->assertNotEmpty($statement->id);
@@ -37,7 +37,7 @@ class StatementRepositoryTest extends BaseTest
             1000,
             $user->wallet->id,
             "",
-            StatementType::IN
+            StatementType::In
         );
     }
 
@@ -52,7 +52,7 @@ class StatementRepositoryTest extends BaseTest
             1000,
             "",
             $transaction->id,
-            StatementType::IN
+            StatementType::In
         );
     }
 }

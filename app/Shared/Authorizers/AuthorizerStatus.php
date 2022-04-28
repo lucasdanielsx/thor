@@ -2,9 +2,9 @@
 
 namespace App\Shared\Authorizers;
 
-class AuthorizerStatus
+enum AuthorizerStatus: string
 {
-    const AUTHORIZED = 'AUTHORIZED';
-    const NOT_AUTHORIZED = 'NOT_AUTHORIZED';
-    const ERROR = 'ERROR';
+    const Authorize = 'AUTHORIZED';
+    const NotAuthorize = 'NOT_AUTHORIZED';
+    const Error = 'ERROR';
 }

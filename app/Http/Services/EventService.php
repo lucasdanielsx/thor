@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Repositories\EventRepository;
+use App\Shared\Enums\EventType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -15,15 +16,24 @@ class EventService
         $this->eventRepository = $eventRepository;
     }
 
-    public function create(string $transactionId, string $type, ?array $payload = []) {
+    /**
+     * Create a new event
+     * 
+     * @param string $transactionId -> Transaction Id
+     * @param EventType $type
+     * @param ?array $payload -> any important data
+     * @return Event
+     */
+    public function create(string $transactionId, EventType $type, ?array $payload = []) {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Create an statement for transaction: ' . $transactionId, [$correlationId]);
+            Log::channel('stderr')
+                ->info($correlationId . ' -> Create an statement for transaction: ' . $transactionId);
 
             return $this->eventRepository->create($transactionId, $type, $payload);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }

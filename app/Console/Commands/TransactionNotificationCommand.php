@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\Shared\Kafka\Topics;
 use App\Console\Handlers\TransactionNotificationHandler;
-use App\Http\Services\EventService;
-use App\Http\Services\UserService;
+use App\Console\Services\EventServiceHandler;
+use App\Console\Services\UserServiceHandler;
+use App\Shared\Kafka\KafkaService;
+use App\Shared\Kafka\Topics;
+use App\Shared\Notifiers\MockNotifier;
 use Junges\Kafka\Facades\Kafka;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Shared\Kafka\KafkaService;
-use App\Shared\Notifiers\MockNotifier;
 
 class TransactionNotificationCommand extends Command
 {
@@ -28,13 +28,13 @@ class TransactionNotificationCommand extends Command
      */
     protected $description = 'Transaction Notification';
 
-    private UserService $userService;
-    private EventService $eventService;
+    private UserServiceHandler $userService;
+    private EventServiceHandler $eventService;
     private KafkaService $kafkaService;
       
     public function __construct(
-        UserService $userService,
-        EventService $eventService,
+        UserServiceHandler $userService,
+        EventServiceHandler $eventService,
         KafkaService $kafkaService
     ) {
         parent::__construct();
@@ -52,9 +52,9 @@ class TransactionNotificationCommand extends Command
     public function handle()
     {
       try {
-          Log::channel('stderr')->info('Starting command ' . $this->description);
+          Log::channel('stderr')->info('Starting command -> ' . $this->description);
 
-          $consumer = Kafka::createConsumer()->subscribe(Topics::TRANSACTION_NOTIFICATION);
+          $consumer = Kafka::createConsumer()->subscribe(Topics::TransactionNotAuthorized->value);
 
           $consumer->withHandler(new TransactionNotificationHandler(
               $this->userService, 

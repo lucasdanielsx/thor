@@ -27,41 +27,43 @@ class UserService
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Finding user by document: ' . $document, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Finding user by document: ' . $document);
 
             $user = $this->userRepository->findByDocument($document);
 
             if(!$user) throw new UserNotFoundException($document);
 
-            Log::channel('stderr')->info('User ' . $document . ' found', [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> User ' . $document . ' found');
 
             return $user;
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }
     }
 
     /**
+     * Find an user by id
+     * 
      * @param string $id -> user id
      * @return User
      */
     public function findById(string $id){
         $correlationId = Str::uuid()->toString();
 
-        Log::channel('stderr')->info('Finding user id: ' . $id, [$correlationId]);
+        Log::channel('stderr')->info($correlationId . ' -> Finding user id: ' . $id);
 
         try {
             $user = $this->userRepository->findById($id);
 
             if(!$user) throw new UserNotFoundException($id);
 
-            Log::channel('stderr')->info('User ' . $id . ' found', [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> User ' . $id . ' found');
 
             return $user;
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
               
             throw $ex;
         }

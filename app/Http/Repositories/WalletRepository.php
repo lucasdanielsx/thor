@@ -6,7 +6,13 @@ use App\Models\Wallet;
 
 class WalletRepository
 {
-    public function updateBalanceIn(string $id, int $value)
+    /**
+     * Increase balance value
+     * 
+     * @param string $id -> Wallet Id
+     * @param int $value -> value to be increase
+     */
+    public function increaseBalance(string $id, int $value)
     {
         $wallet = Wallet::where('id', $id)->first();
         $wallet->balance = $wallet->balance + $value;
@@ -15,7 +21,13 @@ class WalletRepository
         return $wallet;
     }
 
-    public function updateBalanceOut(string $id, int $value)
+    /**
+     * Decrease balance value
+     * 
+     * @param string $id -> Wallet Id
+     * @param int $value -> value to be decrease
+     */
+    public function decreaseBalance(string $id, int $value)
     {
         $wallet = Wallet::where('id', $id)->first();
         $wallet->balance = $wallet->balance - $value;

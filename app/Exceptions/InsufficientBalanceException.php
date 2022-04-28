@@ -9,10 +9,13 @@ class InsufficientBalanceException extends Exception
 {
     private string $payer;
       
-    public function __construct(string $payer)
+    public function __construct(string $payer, string $message = "")
     {
+        parent::__construct($message);
+
         $this->payer = $payer;
     }
+    
     /**
      * Render the exception into an HTTP response.
      *

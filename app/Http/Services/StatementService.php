@@ -3,6 +3,8 @@
 namespace App\Http\Services;
 
 use App\Http\Repositories\StatementRepository;
+use App\Shared\Enums\StatementStatus;
+use App\Shared\Enums\StatementType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -16,41 +18,56 @@ class StatementService
     }
 
     /**
-     * Create an statement
+     * Create a new statement
      * 
-     * @param int $value -> value transacted
-     * @param string $walletId -> id of wallet
-     * @param string $transactionId -> id of transaction
-     * @param int $type -> StatementType
-     * @param ?int $balance -> balance of wallet
-     * @return App\Models\Wallet
+     * @param int $value -> Transaction value
+     * @param string $walletId -> Wallet Id
+     * @param string $transactionId -> Transaction Id
+     * @param StatementType $type
+     * @param ?int $balance -> Wallet balance
+     * @return Statement
      */
     public function create(
         int $value, 
         string $walletId, 
         string $transactionId,
-        int $type,
+        StatementType $type,
         ?int $balance = null
     ) {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Create an statement for wallet: ' . $walletId, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Create an statement for wallet: ' . $walletId);
 
-            return $this->statementRepository->create($value, $walletId, $transactionId, $type, $balance);
+            return $this->statementRepository->create(
+                $value, 
+                $walletId, 
+                $transactionId, 
+                $type, 
+                $balance
+            );
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }
     }
 
-    public function updateBalancesAndStatus(string $id, int $oldBalance, int $newBalance, string $status)
+    /**
+     * Update Statement Status
+     * 
+     * @param string $id -> Statement id
+     * @param int $oldBalance -> Old Wallet Balance
+     * @param int $newBalance -> New Wallet Balance
+     * @param StatementStatus $status
+     * @return Statement
+     */
+    public function updateBalancesAndStatus(string $id, int $oldBalance, int $newBalance, StatementStatus $status)
     {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Update statement of wallet: ' . $id);
 
             return $this->statementRepository->updateBalancesAndStatus(
                 $id, 
@@ -59,22 +76,29 @@ class StatementService
                 $status
             );
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }
     }
 
-    public function updateStatus(string $id, string $status)
+    /**
+     * Update Statement Status
+     * 
+     * @param string $id -> Statement id
+     * @param StatementStatus $status
+     * @return Statement
+     */
+    public function updateStatus(string $id, StatementStatus $status)
     {
         $correlationId = Str::uuid()->toString();
 
         try {
-            Log::channel('stderr')->info('Update statement of wallet: ' . $id, [$correlationId]);
+            Log::channel('stderr')->info($correlationId . ' -> Update statement of wallet: ' . $id);
 
             return $this->statementRepository->updateStatus($id, $status);
         } catch (\Exception $ex) {
-            Log::channel('stderr')->error($ex, [$correlationId]);
+            Log::channel('stderr')->error($correlationId . ' -> Error: ' . $ex);
 
             throw $ex;
         }

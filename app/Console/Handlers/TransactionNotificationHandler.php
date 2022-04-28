@@ -2,27 +2,27 @@
 
 namespace App\Console\Handlers;
 
-use App\Http\Services\EventService;
+use App\Console\Services\EventServiceHandler;
+use App\Console\Services\UserServiceHandler;
+use App\Shared\Enums\EventType;
 use App\Shared\Kafka\Topics;
 use App\Shared\Kafka\KafkaService;
-use App\Http\Services\UserService;
-use App\Shared\Enums\EventType;
 use App\Shared\Notifiers\INotifier;
 use App\Shared\Notifiers\NotifierResponse;
 use App\Shared\Notifiers\NotifierStatus;
-use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
+use Illuminate\Support\Facades\Log;
 
 class TransactionNotificationHandler extends BaseHandler
 {
     private INotifier $notifier;
-    private UserService $userService;
-    private EventService $eventService;
+    private UserServiceHandler $userService;
+    private EventServiceHandler $eventService;
       
     public function __construct(
-        UserService $userService,
+        UserServiceHandler $userService,
         KafkaService $kafkaService,
-        EventService $eventService,
+        EventServiceHandler $eventService,
         INotifier $notifier
     ) {
         parent::__construct($kafkaService);
@@ -34,15 +34,15 @@ class TransactionNotificationHandler extends BaseHandler
 
     private function processResponse(NotifierResponse $response) {
         switch($response->status) {
-            case NotifierStatus::NOTIFIED:
-                return EventType::TRANSACTION_NOTIFIED;
+            case NotifierStatus::Notified:
+                return EventType::TransactionNotified;
             default:
-                return EventType::TRANSACTION_NOT_NOTIFIED;
+                return EventType::TransactionNotNotified;
         }
     }
 
     public function __invoke(KafkaConsumerMessage $message) {
-        $this->validRetries($message, Topics::TRANSACTION_NOTIFICATION_DLQ);
+        $this->validRetries($message, Topics::TransactionNotificationDlq->value);
 
         $body = $message->getBody();
         $headers = $message->getHeaders();
@@ -69,7 +69,7 @@ class TransactionNotificationHandler extends BaseHandler
             return true;
         } catch (\Throwable $th) {
             $this->retry(
-                Topics::TRANSACTION_NOTIFICATION,
+                Topics::TransactionNotification->value,
                 $correlationId,
                 $body,
                 (int) $headers['retry']

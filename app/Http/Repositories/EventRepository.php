@@ -3,11 +3,20 @@
 namespace App\Http\Repositories;
 
 use App\Models\Event;
+use App\Shared\Enums\EventType;
 use Illuminate\Support\Str;
 
 class EventRepository 
 {
-    public function create(string $transactionId, string $type, ?array $payload = [])
+    /**
+     * Create a new event
+     * 
+     * @param string $transactionId -> Transaction Id
+     * @param EventType $type
+     * @param ?array $payload -> any important data
+     * @return Event
+     */
+    public function create(string $transactionId, EventType $type, ?array $payload = [])
     {
         return Event::create([
             'id' => Str::uuid(),

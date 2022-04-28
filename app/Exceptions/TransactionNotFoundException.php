@@ -9,12 +9,13 @@ class TransactionNotFoundException extends Exception
 {
     private string $id;
       
-    public function __construct(string $id)
+    public function __construct(string $id, string $message = "")
     {
-        parent::__construct("Transaction {$id} not found");
+        parent::__construct($message);
 
         $this->id = $id;
     }
+
     /**
      * Render the exception into an HTTP response.
      *

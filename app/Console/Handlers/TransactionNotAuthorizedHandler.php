@@ -26,8 +26,8 @@ class TransactionNotAuthorizedHandler extends BaseHandler
 
     private function validateTransaction(Transaction $transaction){
         if (
-            $transaction->status == TransactionStatus::PAID || 
-            $transaction->status == TransactionStatus::NOT_PAID
+            $transaction->status == TransactionStatus::Paid || 
+            $transaction->status == TransactionStatus::NotPaid
         ) 
           throw new HandlerException('Invalid transaction status');
 
@@ -35,7 +35,7 @@ class TransactionNotAuthorizedHandler extends BaseHandler
     }
 
     public function __invoke(KafkaConsumerMessage $message) {
-        $this->validRetries($message, Topics::TRANSACTION_NOT_AUTHORIZED_DLQ);
+        $this->validRetries($message, Topics::TransactionNotAuthorizedDlq->value);
 
         $body = $message->getBody();
         $headers = $message->getHeaders();
@@ -43,25 +43,26 @@ class TransactionNotAuthorizedHandler extends BaseHandler
         $correlationId = (string) $headers['correlationId'];
 
         try {
-            Log::channel('stderr')->info('Processing message ' . $correlationId);
+            Log::channel('stderr')->info($correlationId . ' -> processing message');
 
             $transaction = $this->transactionService->findById((string) $body['transactionId']);
 
             $this->validateTransaction($transaction);
 
-            $this->transactionService->reversalPayment($transaction->id);
+            $this->transactionService->cancelTransaction($transaction->id);
 
-            Log::channel('stderr')->info('Message ' . $correlationId . ' processed');
+            Log::channel('stderr')->info($correlationId . ' -> message was processed');
             
             return true;
         } catch (\Throwable $th) {
             $this->retry(
-                Topics::TRANSACTION_NOT_AUTHORIZED,
+                Topics::TransactionNotAuthorized->value,
                 $correlationId,
                 $body,
                 (int) $headers['retry']
             );
             
+            Log::channel('stderr')->error($th);
             Log::channel('stderr')->error('Error processing message -> ' . $correlationId);
 
             throw $th;

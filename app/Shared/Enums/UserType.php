@@ -2,8 +2,8 @@
 
 namespace App\Shared\Enums;
 
-class UserType
+enum UserType: int
 {
-  const CUSTOMER = 1;
-  const STORE = 2;
+    case Customer = 1;
+    case Store = 2;
 }
