@@ -4,7 +4,7 @@ namespace App\Shared\Notifiers;
 
 class NotifierResponse
 {
-    public string $status;
+    public NotifierStatus $status;
     public array $payload;
 
     public function toArray() {

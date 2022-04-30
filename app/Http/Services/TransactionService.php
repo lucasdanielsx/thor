@@ -17,7 +17,6 @@ use App\Shared\Enums\StatementStatus;
 use App\Shared\Enums\EventType;
 use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\Topics;
-use App\Models\Wallet;
 use App\Shared\Kafka\KafkaService;
 use App\Shared\Kafka\Messages\TransactionMessage;
 use App\Shared\Kafka\Messages\TransactionNotificationMessage;
@@ -177,11 +176,10 @@ class TransactionService
         }
     }
 
-    //TODO remove this return array return
-    private function processFinishedStatement($statements){  
-        $payeeId = '';
-        $payerId = '';
-
+    /**
+     * Updated Statement and wallet
+     */
+    private function processFinishedStatement(array $statements){  
         foreach ($statements as $statement) {
             if($statement->type == StatementType::In) {
                 $wallet = $this->walletService->increaseBalance(
@@ -195,19 +193,27 @@ class TransactionService
                     $wallet->balance,
                     StatementStatus::Finished
                 );
-
-                $payeeId = $statement->wallet->user->id;
             } else {
                 $this->statementService->updateStatus(
                     $statement->id,
                     StatementStatus::Finished
                 );
-
-                $payerId = $statement->wallet->user->id;
             }
         }
+    }
 
-        return [$payeeId, $payerId];
+    private function getPayeeByStatements(array $statements){  
+        foreach ($statements as $statement) {
+            if($statement->type == StatementType::In)
+                return $statement->wallet->user->id;
+        }
+    }
+
+    private function getPayerByStatements(array $statements){  
+        foreach ($statements as $statement) {
+            if($statement->type == StatementType::Out)
+                return $statement->wallet->user->id;
+        }
     }
 
     private function notifyUser(
@@ -252,7 +258,10 @@ class TransactionService
 
             $transaction->status = TransactionStatus::Paid;
 
-            [$payeeId, $payerId] = $this->processFinishedStatement($transaction->statements);
+            $this->processFinishedStatement($transaction->statements);
+
+            $payeeId = $this->getPayeeByStatements($transaction->statements);
+            $payerId = $this->getPayerByStatements($transaction->statements);
 
             $transaction->save();
 

@@ -33,4 +33,8 @@ abstract class BaseTest extends TestCase
     public function createTransaction() {
         return Transaction::factory()->create();
     }
+
+    public function createTransactionInPaidStatus() {
+        return Transaction::factory()->paidStatus()->create();
+    }
 }

@@ -2,7 +2,12 @@
 
 namespace PHPSTORM_META;
 
-override(\Mockery::mock(0), type(0));
+override(
+  \PHPUnit\Framework\TestCase::createMock(0),
+  map([
+      '@&\PHPUnit\Framework\MockObject\MockObject',
+  ])
+);
 override(\Mockery::spy(0), type(0));
 override(\Mockery::namedMock(0), type(0));
 override(\Mockery::instanceMock(0), type(0));

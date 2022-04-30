@@ -33,4 +33,18 @@ class TransactionFactory extends Factory
             'updated_at' => now(),
         ];
     }
+
+    /**
+     * Indicate that Transaction is paid
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function paidStatus()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => TransactionStatus::Paid,
+            ];
+        });
+    }
 }

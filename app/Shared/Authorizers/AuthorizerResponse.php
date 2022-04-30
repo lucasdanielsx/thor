@@ -4,7 +4,7 @@ namespace App\Shared\Authorizers;
 
 class AuthorizerResponse
 {
-    public string $status;
+    public AuthorizerStatus $status;
     public array $payload;
 
     public function toArray() {
