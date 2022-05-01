@@ -77,16 +77,14 @@ class TransactionNotAuthorizedHandlerTest extends BaseTest
         $this->assertEquals(TransactionStatus::NotPaid->value, $transaction->status);
         $this->assertEquals(EventType::TransactionNotPaid->value, $transaction->events[1]->type);
 
-        //validade new wallet balance
+        //validade wallets and balances
+        $storeUser = $this->getStoreUser();
+        $this->assertEquals(1000000, $storeUser->wallet->balance);
+        $this->assertEquals(StatementStatus::NotFinished->value, $storeUser->wallet->statements[0]->status);
+
         $customerUser = $this->getCostumerUser();
         $this->assertEquals(1000100, $customerUser->wallet->balance);
-
-        //validade statements status
         $this->assertEquals(StatementStatus::NotFinished->value, $customerUser->wallet->statements[0]->status);
-
-        //validade new wallet balance
-        $storeUser = $this->getStoreUser();
-        $this->assertEquals(StatementStatus::NotFinished->value, $storeUser->wallet->statements[0]->status);
     }
 
     public function test_process_invalid_event_error()

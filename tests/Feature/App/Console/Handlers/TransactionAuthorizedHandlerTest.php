@@ -77,15 +77,13 @@ class TransactionAuthorizedHandlerTest extends BaseTest
         $this->assertEquals(TransactionStatus::Paid->value, $transaction->status);
         $this->assertEquals(EventType::TransactionPaid->value, $transaction->events[1]->type);
 
-        //validade new wallet balance
+        //validade wallets and balances
         $storeUser = $this->getStoreUser();
         $this->assertEquals(1000100, $storeUser->wallet->balance);
-
-        //validade statements status
         $this->assertEquals(StatementStatus::Finished->value, $storeUser->wallet->statements[0]->status);
 
-        //validade new wallet balance
         $customerUser = $this->getCostumerUser();
+        $this->assertEquals(1000000, $customerUser->wallet->balance);
         $this->assertEquals(StatementStatus::Finished->value, $customerUser->wallet->statements[0]->status);
     }
 
