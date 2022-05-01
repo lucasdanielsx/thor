@@ -85,7 +85,7 @@ class AuthorizeTransactionHandlerTest extends BaseTest
 
         Kafka::assertPublishedOn(Topics::TransactionAuthorized->value);
 
-        //validate event
+        //validate event type
         $transaction = $this->transactionServiceHandler->findById($transaction->id);
         $this->assertEquals(EventType::TransactionAuthorized->value, $transaction->events[0]->type);
     }

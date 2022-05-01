@@ -4,6 +4,7 @@ namespace App\Console\Handlers;
 
 use App\Console\Services\EventServiceHandler;
 use App\Console\Services\UserServiceHandler;
+use App\Exceptions\HandlerException;
 use App\Shared\Enums\EventType;
 use App\Shared\Kafka\Topics;
 use App\Shared\Kafka\KafkaService;
@@ -66,6 +67,14 @@ class TransactionNotificationHandler extends BaseHandler
 
             Log::channel('stderr')->info('Message ' . $correlationId . ' processed');
             
+            if($eventType == EventType::TransactionNotNotified)
+                $this->retry(
+                    Topics::TransactionNotification->value,
+                    $correlationId,
+                    $body,
+                    (int) $headers['retry']
+                );
+
             return true;
         } catch (\Throwable $th) {
             $this->retry(

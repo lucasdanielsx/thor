@@ -37,6 +37,10 @@ abstract class BaseTest extends TestCase
         return Transaction::factory()->create();
     }
 
+    public function findTransactionById(string $id) {
+        return Transaction::where('id', $id)->first();
+    }
+
     public function createTransactionInPaidStatus() {
         return Transaction::factory()->paidStatus()->create();
     }

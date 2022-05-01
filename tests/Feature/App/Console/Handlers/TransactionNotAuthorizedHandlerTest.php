@@ -91,9 +91,9 @@ class TransactionNotAuthorizedHandlerTest extends BaseTest
     {
         $this->expectException(HandlerException::class);
 
-        $this->seed();
-
         Kafka::fake();
+
+        $this->seed();
 
         $handler = new TransactionNotAuthorizedHandler(
             $this->transactionServiceHandler,
@@ -117,9 +117,9 @@ class TransactionNotAuthorizedHandlerTest extends BaseTest
     {
         $this->expectException(HandlerException::class);
 
-        $this->seed();
-
         Kafka::fake();
+
+        $this->seed();
 
         $handler = new TransactionNotAuthorizedHandler(
             $this->transactionServiceHandler,
