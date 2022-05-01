@@ -2,7 +2,6 @@
 
 namespace App\Console\Handlers;
 
-use App\Console\Services\EventServiceHandler;
 use App\Console\Services\TransactionServiceHandler;
 use App\Exceptions\HandlerException;
 use App\Http\Repositories\EventRepository;
@@ -14,10 +13,9 @@ use App\Http\Services\EventService;
 use App\Http\Services\StatementService;
 use App\Http\Services\UserService;
 use App\Http\Services\WalletService;
-use App\Shared\Authorizers\AuthorizerResponse;
-use App\Shared\Authorizers\AuthorizerStatus;
-use App\Shared\Authorizers\IAuthorizer;
 use App\Shared\Enums\EventType;
+use App\Shared\Enums\StatementStatus;
+use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\KafkaService;
 use App\Shared\Kafka\Topics;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
@@ -25,16 +23,14 @@ use Junges\Kafka\Facades\Kafka;
 use Mockery;
 use Tests\BaseTest;
 
-class AuthorizeTransactionHandlerTest extends BaseTest
+class TransactionAuthorizedHandlerTest extends BaseTest
 {
     private TransactionServiceHandler $transactionServiceHandler;
     private KafkaService $kafkaService;
-    private EventServiceHandler $eventServiceHandler;
 
     public function __construct() {
         parent::__construct();
 
-        $this->eventServiceHandler = new EventServiceHandler(new EventRepository());
         $this->kafkaService = new KafkaService();
 
         $userService = new UserService(new UserRepository());
@@ -49,29 +45,20 @@ class AuthorizeTransactionHandlerTest extends BaseTest
         );
     }
 
-    public function test_process_authorized_success()
+    public function test_process_success()
     {
         Kafka::fake();
 
         $this->seed();
 
-        $authorizerResponse = new AuthorizerResponse();
-        $authorizerResponse->status = AuthorizerStatus::Authorize;
-        $authorizerResponse->payload = [];
-
-        $authorizerMock = Mockery::mock(IAuthorizer::class);
-        $authorizerMock->shouldReceive('authorize')
-            ->once()
-            ->andReturn($authorizerResponse);
-
-        $handler = new AuthorizeTransactionHandler(
+        $handler = new TransactionAuthorizedHandler(
             $this->transactionServiceHandler,
-            $this->eventServiceHandler,
-            $this->kafkaService,
-            $authorizerMock
+            $this->kafkaService
         );
 
         $transaction = $this->createTransaction();
+        $this->createEvent($transaction->id);
+        $this->createStatements($transaction->id);
 
         $messageMock = Mockery::mock(KafkaConsumerMessage::class);
         $messageMock->shouldReceive('getHeaders')
@@ -83,37 +70,40 @@ class AuthorizeTransactionHandlerTest extends BaseTest
 
         $handler->__invoke($messageMock);
 
-        Kafka::assertPublishedOn(Topics::TransactionAuthorized->value);
+        Kafka::assertPublishedOn(Topics::TransactionNotification->value);
 
-        //validate event
+        //validade transaction status
         $transaction = $this->transactionServiceHandler->findById($transaction->id);
-        $this->assertEquals(EventType::TransactionAuthorized->value, $transaction->events[0]->type);
+        $this->assertEquals(TransactionStatus::Paid->value, $transaction->status);
+        $this->assertEquals(EventType::TransactionPaid->value, $transaction->events[1]->type);
+
+        //validade new wallet balance
+        $storeUser = $this->getStoreUser();
+        $this->assertEquals(1000100, $storeUser->wallet->balance);
+
+        //validade statements status
+        $this->assertEquals(StatementStatus::Finished->value, $storeUser->wallet->statements[0]->status);
+
+        //validade new wallet balance
+        $customerUser = $this->getCostumerUser();
+        $this->assertEquals(StatementStatus::Finished->value, $customerUser->wallet->statements[0]->status);
     }
 
-    public function test_process_not_authorized_success()
+    public function test_process_invalid_event_error()
     {
-        Kafka::fake();
+        $this->expectException(HandlerException::class);
 
         $this->seed();
 
-        $authorizerResponse = new AuthorizerResponse();
-        $authorizerResponse->status = AuthorizerStatus::NotAuthorize;
-        $authorizerResponse->payload = [];
+        Kafka::fake();
 
-        $authorizerMock = Mockery::mock(IAuthorizer::class);
-        $authorizerMock->shouldReceive('authorize')
-            ->once()
-            ->andReturn($authorizerResponse);
-
-        $handler = new AuthorizeTransactionHandler(
+        $handler = new TransactionAuthorizedHandler(
             $this->transactionServiceHandler,
-            $this->eventServiceHandler,
-            $this->kafkaService,
-            $authorizerMock
+            $this->kafkaService
         );
 
         $transaction = $this->createTransaction();
-
+        
         $messageMock = Mockery::mock(KafkaConsumerMessage::class);
         $messageMock->shouldReceive('getHeaders')
             ->twice()
@@ -123,33 +113,23 @@ class AuthorizeTransactionHandlerTest extends BaseTest
             ->andReturn(["transactionId" => $transaction->id]);
 
         $handler->__invoke($messageMock);
-
-        Kafka::assertPublishedOn(Topics::TransactionNotAuthorized->value);
-
-        //validate event
-        $transaction = $this->transactionServiceHandler->findById($transaction->id);
-        $this->assertEquals(EventType::TransactionNotAuthorized->value, $transaction->events[0]->type);
     }
 
     public function test_process_invalid_transaction_status_error()
     {
         $this->expectException(HandlerException::class);
-      
-        Kafka::fake();
 
         $this->seed();
 
-        $authorizerMock = Mockery::mock(IAuthorizer::class);
+        Kafka::fake();
 
-        $handler = new AuthorizeTransactionHandler(
+        $handler = new TransactionAuthorizedHandler(
             $this->transactionServiceHandler,
-            $this->eventServiceHandler,
-            $this->kafkaService,
-            $authorizerMock
+            $this->kafkaService
         );
 
         $transaction = $this->createTransactionInPaidStatus();
-
+        
         $messageMock = Mockery::mock(KafkaConsumerMessage::class);
         $messageMock->shouldReceive('getHeaders')
             ->twice()

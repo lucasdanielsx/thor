@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\App\Http\Controllers;;
 
+use App\Shared\Enums\StatementType;
 use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\Topics;
 use Junges\Kafka\Facades\Kafka;
@@ -36,8 +37,11 @@ class TransactionControllerTest extends BaseTest
         //Valid payer balance
         $content = json_decode($response->getContent(), true);
 
-        $this->assertEquals($content['balance'], 990000);
+        $this->assertEquals(990000, $content['balance']);
         $this->assertNotEmpty($content['statements']);
+        $this->assertEquals(StatementType::Out->value, $content['statements'][0]['type']);
+        $this->assertNotEmpty($content['statements'][0]['new_balance']);
+        $this->assertNotEmpty($content['statements'][0]['old_balance']);
 
         //Valid payee balance
         $response = $this->get('/api/v1/wallets/' . $store->document);
@@ -46,6 +50,9 @@ class TransactionControllerTest extends BaseTest
 
         $this->assertEquals($content['balance'], 1000000);
         $this->assertNotEmpty($content['statements']);
+        $this->assertEquals(StatementType::In->value, $content['statements'][0]['type']);
+        $this->assertEmpty($content['statements'][0]['new_balance']);
+        $this->assertEmpty($content['statements'][0]['old_balance']);
     }
 
     public function test_find_by_id_transaction_success()

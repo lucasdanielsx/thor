@@ -6,6 +6,7 @@ use App\Console\Services\TransactionServiceHandler;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 use App\Exceptions\HandlerException;
 use App\Models\Transaction;
+use App\Shared\Enums\EventType;
 use App\Shared\Enums\TransactionStatus;
 use App\Shared\Kafka\KafkaService;
 use App\Shared\Kafka\Topics;
@@ -31,7 +32,9 @@ class TransactionNotAuthorizedHandler extends BaseHandler
         ) 
           throw new HandlerException('Invalid transaction status');
 
-        //TODO valid events
+        if (empty($transaction->events->toArray()) 
+            || in_array(EventType::TransactionNotAuthorized->value, array_column($transaction->events->toArray()[0], 'type'))) 
+            throw new HandlerException('Invalid transaction authorized event not found');
     }
 
     public function __invoke(KafkaConsumerMessage $message) {

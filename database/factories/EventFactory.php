@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Statement;
-use App\Shared\Enums\StatementStatus;
-use App\Shared\Enums\StatementType;
+use App\Models\Event;
+use App\Shared\Enums\EventType;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class StatementFactory extends Factory
+class EventFactory extends Factory
 {
 
     /**
@@ -16,7 +15,7 @@ class StatementFactory extends Factory
      *
      * @var string
      */
-    protected $model = Statement::class;
+    protected $model = Event::class;
 
     /**
      * Define the model's default state.
@@ -27,9 +26,8 @@ class StatementFactory extends Factory
     {
         return [
             'id' => Str::uuid(),
-            'value' => 100,
-            'status' => StatementStatus::Created,
-            'type' => StatementType::In,
+            'type' => EventType::TransactionAuthorized,
+            'payload' => "{\"test\" : \"test\"}",
             'created_at' => now(),
             'updated_at' => now(),
         ];

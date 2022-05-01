@@ -20,6 +20,7 @@ use App\Shared\Kafka\Topics;
 use App\Shared\Kafka\KafkaService;
 use App\Shared\Kafka\Messages\TransactionMessage;
 use App\Shared\Kafka\Messages\TransactionNotificationMessage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -177,11 +178,11 @@ class TransactionService
     }
 
     /**
-     * Updated Statement and wallet
+     * Update Statement and wallet
      */
-    private function processFinishedStatement(array $statements){  
+    private function processFinishedStatement(Collection $statements){  
         foreach ($statements as $statement) {
-            if($statement->type == StatementType::In) {
+            if($statement->type == StatementType::In->value) {
                 $wallet = $this->walletService->increaseBalance(
                     $statement->wallet->id, 
                     $statement->value
@@ -202,16 +203,17 @@ class TransactionService
         }
     }
 
-    private function getPayeeByStatements(array $statements){  
+    private function getPayeeByStatements(Collection $statements){  
         foreach ($statements as $statement) {
-            if($statement->type == StatementType::In)
+            if($statement->type == StatementType::In->value){
                 return $statement->wallet->user->id;
+            }
         }
     }
 
-    private function getPayerByStatements(array $statements){  
+    private function getPayerByStatements(Collection $statements){  
         foreach ($statements as $statement) {
-            if($statement->type == StatementType::Out)
+            if($statement->type == StatementType::Out->value)
                 return $statement->wallet->user->id;
         }
     }
@@ -284,10 +286,8 @@ class TransactionService
 
     //TODO remove this return
     private function processNotFinishedStatement($statements){  
-        $payerId = '';
-
         foreach ($statements as $statement) {
-            if($statement->type == StatementType::In) {
+            if($statement->type == StatementType::Out->value) {
                 $this->walletService->increaseBalance(
                     $statement->wallet->id, 
                     $statement->value
@@ -302,12 +302,8 @@ class TransactionService
                     $statement->id,
                     StatementStatus::NotFinished
                 );
-
-                $payerId = $statement->wallet->user->id;
             }
         }
-
-        return $payerId;
     }
 
     /**
@@ -334,7 +330,9 @@ class TransactionService
 
             $transaction->status = TransactionStatus::NotPaid;
 
-            $payerId = $this->processNotFinishedStatement($transaction->statements);
+            $this->processNotFinishedStatement($transaction->statements);
+
+            $payerId = $this->getPayerByStatements($transaction->statements);
 
             $transaction->save();
 
