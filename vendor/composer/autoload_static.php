@@ -217,8 +217,8 @@ class ComposerStaticInitf1e8dbea79f063a02564cdc80d51ccf5
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'Widmogrod\\' => 
         array (
@@ -378,8 +378,8 @@ class ComposerStaticInitf1e8dbea79f063a02564cdc80d51ccf5
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -582,7 +582,9 @@ class ComposerStaticInitf1e8dbea79f063a02564cdc80d51ccf5
         'App\\Console\\Handlers\\TransactionNotAuthorizedHandler' => __DIR__ . '/../..' . '/app/Console/Handlers/TransactionNotAuthorizedHandler.php',
         'App\\Console\\Handlers\\TransactionNotificationHandler' => __DIR__ . '/../..' . '/app/Console/Handlers/TransactionNotificationHandler.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Console\\Services\\EventServiceHandler' => __DIR__ . '/../..' . '/app/Console/Services/EventServiceHandler.php',
         'App\\Console\\Services\\TransactionServiceHandler' => __DIR__ . '/../..' . '/app/Console/Services/TransactionServiceHandler.php',
+        'App\\Console\\Services\\UserServiceHandler' => __DIR__ . '/../..' . '/app/Console/Services/UserServiceHandler.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Exceptions\\HandlerException' => __DIR__ . '/../..' . '/app/Exceptions/HandlerException.php',
         'App\\Exceptions\\InsufficientBalanceException' => __DIR__ . '/../..' . '/app/Exceptions/InsufficientBalanceException.php',
@@ -790,6 +792,7 @@ class ComposerStaticInitf1e8dbea79f063a02564cdc80d51ccf5
         'Cron\\HoursField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/HoursField.php',
         'Cron\\MinutesField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MinutesField.php',
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
+        'Database\\Factories\\EventFactory' => __DIR__ . '/../..' . '/database/factories/EventFactory.php',
         'Database\\Factories\\StatementFactory' => __DIR__ . '/../..' . '/database/factories/StatementFactory.php',
         'Database\\Factories\\TransactionFactory' => __DIR__ . '/../..' . '/database/factories/TransactionFactory.php',
         'Database\\Factories\\UserFactory' => __DIR__ . '/../..' . '/database/factories/UserFactory.php',
