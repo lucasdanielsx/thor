@@ -54,7 +54,7 @@ class TransactionNotificationCommand extends Command
       try {
           Log::channel('stderr')->info('Starting command -> ' . $this->description);
 
-          $consumer = Kafka::createConsumer()->subscribe(Topics::TransactionNotAuthorized->value);
+          $consumer = Kafka::createConsumer()->subscribe(Topics::TransactionNotification->value);
 
           $consumer->withHandler(new TransactionNotificationHandler(
               $this->userService, 
